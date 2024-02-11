@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -42,9 +44,13 @@ class dice : protected combination
     public:
     int calculateTotalDiceRollCombinations(int totalDice, int diceFace=6);
     int showDiceFace(int diceFace=6);
-    float calculateProbability(int sumInput, int diceNums=2, int diceFaces=6);
+    void showSumProb(int diceNums=2, int diceFaces=6);
     private:
     int totalDiceFaces;
+    vector <int> holdSumVector;
+
+    float calculateProbability(int sumInput, int diceNums=2, int diceFaces=6);
+    int diceRollFindSums(int diceNums=2, int diceFaces=6);
     int findCountSumEquals(int sumInput, int diceFace=6);
 };
 
@@ -68,6 +74,42 @@ int dice::showDiceFace(int diceFace)
 
 }
 
+bool exists(const std::vector<int>& myVector, int value) {
+    return std::find(myVector.begin(), myVector.end(), value) != myVector.end();
+}
+
+void dice::showSumProb(int diceNums, int diceFaces)
+{
+    diceRollFindSums(diceNums, diceFaces);
+   std::cout << "HoldSumVector " << int(holdSumVector.size()) << " numbers.\n" << std::endl;
+
+   for(int i=0; i<holdSumVector.size();i++)
+   {
+
+    std::cout << "Value " << holdSumVector[i] << std::endl;
+    calculateProbability(holdSumVector[i], diceNums, diceFaces);
+   } 
+}
+
+int dice::diceRollFindSums(int diceNums, int diceFaces)
+{
+ for(int iA =1; iA<=diceFaces; iA++)
+    {
+        for(int iB =1; iB<=diceFaces; iB++)
+        {
+
+            if ((iA+iB)>=2)
+            {
+                if (!exists(holdSumVector, iA+iB)) {
+                    std::cout << "Sum " << iA+iB << std::endl;
+                    holdSumVector.push_back(iA+iB);
+                }
+            }
+        }
+    }
+
+}
+
 float dice::calculateProbability(int sumInput, int diceNums,int diceFaces)
 {
 
@@ -78,7 +120,7 @@ float dice::calculateProbability(int sumInput, int diceNums,int diceFaces)
     std::cout << "Find Sum Count" << probility << std::endl;
     probility = probility / calculateTotalDiceRollCombinations(diceNums,diceFaces);
 
-    std::cout << "Probability " << probility << std::endl;
+    std::cout << "Sum " << sumInput << "Probability " << probility << std::endl;
     return probility;
 
 }
@@ -125,5 +167,6 @@ int main(int, char**){
 
     diceObj.showDiceFace();
 
-    diceObj.calculateProbability(8, 2, 6); 
+    diceObj.showSumProb();
+    //diceObj.calculateProbability(8, 2, 6); 
 }
